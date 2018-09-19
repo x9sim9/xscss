@@ -1,0 +1,41 @@
+$path: (
+	images: "/",
+);
+
+$developer_mode: 0;	// true
+
+$screen_width: (
+	lg: 1200px,
+	md: 992px,
+	sm: 768px,
+	xs: 480px
+);
+
+$device_width: (
+	desktop: map-get($screen_width, "sm"),
+	mobile: map_get($screen_width, "sm") - 1px
+);
+
+$padding: (
+	default: 15px,
+);
+
+$margin: (
+	default: 15px,
+);
+
+$height: (
+
+);
+
+$width: (
+
+);
+
+$font: (
+  default: 12px,
+);
+
+$border: (
+  default: 1px,
+);

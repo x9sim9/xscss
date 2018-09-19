@@ -1,0 +1,260 @@
+@mixin border($type:null, $border_color:null, $size:v($border), $extra:null)
+{
+	$border_color: map-replace-by-key($color, $border_color);
+
+  @if($type == top)
+  {
+    border-top:solid $size $border_color $extra;
+  }
+  @else if($type == left)
+  {
+    border-left:solid $size $border_color $extra;
+  }
+  @else if($type == right)
+  {
+    border-right:solid $size $border_color $extra;
+  }
+  @else if($type == bottom)
+  {
+    border-bottom:solid $size $border_color $extra;
+  }
+  @else
+  {
+    border:solid $size $border_color $extra;
+  }
+}
+
+@mixin color($item, $extra:null)
+{
+	$item: map-replace-by-key($color, $item);
+	color:$item $extra;
+}
+
+@mixin background-color($item, $extra:null)
+{
+	$item: map-replace-by-key($color, $item);
+	background-color:$item $extra;
+}
+
+@mixin bg-color($item, $extra:null)
+{
+	@include background-color($item, $extra);
+}
+
+@mixin padding($size:default, $type:null, $extra:null)
+{
+	$size: map-replace-by-key($padding, $size);
+
+  @if($type == top)
+  {
+    padding-top:$size $extra;
+  }
+  @else if($type == left)
+  {
+    padding-left:$size $extra;
+  }
+  @else if($type == right)
+  {
+    padding-right:$size $extra;
+  }
+  @else if($type == bottom)
+  {
+    padding-bottom:$size $extra;
+  }
+  @else
+  {
+    padding:$size $extra;
+  }
+}
+
+@mixin margin($size:default, $type:null, $extra:null)
+{
+	$size: map-replace-by-key($margin, $size);
+
+  @if($type == top)
+  {
+    margin-top:$size $extra;
+  }
+  @else if($type == left)
+  {
+    margin-left:$size $extra;
+  }
+  @else if($type == right)
+  {
+    margin-right:$size $extra;
+  }
+  @else if($type == bottom)
+  {
+    margin-bottom:$size $extra;
+  }
+  @else
+  {
+    margin:$size $extra;
+  }
+}
+
+
+/* @include clearfix */
+@mixin clearfix
+{
+	&:before,
+	&:after { content:""; display:table; }
+	&:after { clear: both; }
+	zoom: 1;
+}
+
+/* @include transition(all,2s,ease-out); */
+@mixin transition($what: all, $time: 0.2s, $how: ease-in-out)
+{
+		-webkit-transition: $what $time $how;
+		-moz-transition:		$what $time $how;
+		-ms-transition:		 $what $time $how;
+		-o-transition:			$what $time $how;
+		transition:				 $what $time $how;
+}
+
+/* @include responsive("lg", "MIN") { display:none; } */
+/* @include responsive("desktop") { display:none; } */
+@mixin responsive($breakpoint, $type:"max")
+{
+	// If the key exists $screen-width
+	@if map-has-key($screen_width, $breakpoint)
+	{
+		@if($type == min)
+		{
+			@media (min-width: v($screen_width, $breakpoint)) {
+				@content;
+			}
+		}
+		@else	// MAX
+		{
+			@media (max-width: v($screen_width, $breakpoint)) {
+				@content;
+			}
+		}
+
+	}
+	@else if map-has-key($device_width, $breakpoint)
+	{
+		@if($breakpoint == desktop)
+		{
+			@media (min-width: v($device_width, $breakpoint)) {
+				@content;
+			}
+		}
+		@else
+		{
+			@media (max-width: v($device_width, $breakpoint)) {
+				@content;
+			}
+		}
+	}
+
+
+	// If the key doesn't exist in the map
+	@else {
+		@warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+				+ "Available breakpoints are $screen-width: #{map-keys($screen_width)}."
+				+ "Available breakpoints are $device-width: #{map-keys($device_width)}.";
+
+	}
+}
+
+/* @include column(1) */
+@mixin column($columns)
+{
+	width:calc(100% / #{$columns});
+}
+
+@mixin fake-underline($color: #666, $top: 84%, $bottom: 90%) {
+		background-image: linear-gradient(
+				180deg, rgba(0,0,0,0),
+				rgba(0,0,0,0) $top,
+				$color $top + 0.1%,
+				$color $bottom,
+				rgba(0,0,0,0) $bottom + 0.1%,
+				rgba(0,0,0,0)
+		);
+		text-decoration: none;
+}
+
+@mixin vertical_align($height, $align:'')
+{
+	$aligns: (
+		top: flex-start,
+		middle: center,
+		bottom: flex-end,
+		equal: space-between
+	);
+
+	display:flex;
+	flex-direction:column;
+	justify-content:v($aligns, $align);
+	height:$height;
+}
+
+@mixin valign($height, $align:'')
+{
+	@include vertical_align($height, $align);
+}
+
+@mixin remove_layout()
+{
+	border:0;
+	padding:0;
+	margin:0;
+	border-radius:0;
+}
+
+@mixin remove_styling()
+{
+	@include remove_layout();
+
+	color:inherit;
+	background-color:inherit;
+	box-shadow:none;
+}
+
+@mixin background_image($item...)
+{
+	$url: null;
+
+	@if(length($item) > 1)
+	{
+		$url: v($image, $item...);
+	}
+	@else
+	{
+		$url: nth($item, 1);
+	}
+
+	$url: v($path, images) + $url;
+
+	background-image:url($url);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+@mixin bg-image($item...)
+{
+	@include background_image($item...);
+}
+
+@mixin image($item...)
+{
+	$url: null;
+
+	@if(length($item) > 1)
+	{
+		$url: v($image, $item...);
+	}
+	@else
+	{
+		$url: nth($item, 1);
+	}
+
+	$url: v($path, images) + $url;
+
+	content:url($url);
+}

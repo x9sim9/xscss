@@ -1,0 +1,199 @@
+@function remove-nth($list, $index) {
+	$result: null;
+
+	@if type-of($index) != number {
+		@warn "$index: #{quote($index)} is not a number for `remove-nth`.";
+	} @else if $index == 0 {
+		@warn "List index 0 must be a non-zero integer for `remove-nth`.";
+	} @else if abs($index) > length($list) {
+		@warn "List index is #{$index} but list is only #{length($list)} item long for `remove-nth`.";
+	} @else {
+		$result: ();
+		$index: if($index < 0, length($list) + $index + 1, $index);
+
+		@for $i from 1 through length($list) {
+			@if $i != $index {
+				$result: append($result, nth($list, $i));
+			}
+		}
+	}
+
+	@return $result;
+}
+
+/** Map deep get
+ *
+ * @access public
+ *
+ * @param {Map} $map - Map
+ * @param {Arglist} $keys - Key chain
+ *					If no args given "default" is used
+ *
+ * @return {*} - Desired value
+*/
+@function map-deep-get($map...)
+{
+	$keys: remove-nth($map, 1);
+	$map: nth($map, 1);
+
+	@if(length($keys) == 0) { $keys: default; }
+	@each $key in $keys {
+		@if(type-of($key) == "string") { $key: unquote($key); }
+		$map: map-get($map, $key);
+	}
+	@return $map;
+}
+
+@function v($map...)
+{
+	@return map-deep-get($map...);
+}
+
+@function str-split($string, $separator)
+{
+    // empty array/list
+    $split-arr: ();
+    // first index of separator in string
+    $index : str-index($string, $separator);
+    // loop through string
+    @while $index != null {
+        // get the substring from the first character to the separator
+        $item: str-slice($string, 1, $index - 1);
+        // push item to array
+        $split-arr: append($split-arr, $item);
+        // remove item and separator from string
+        $string: str-slice($string, $index + 1);
+        // find new index of separator
+        $index : str-index($string, $separator);
+    }
+    // add the remaining string to list (the last item)
+    $split-arr: append($split-arr, $string);
+
+    @return $split-arr;
+}
+
+
+
+
+/// Trim `$string`
+/// @access private
+/// @param {String} $string - String to trim
+/// @return {String}
+@function _trim($string) {
+  @return str-slice(
+    $string,
+    _first-index($string, 'left'),
+    _first-index($string, 'right')
+  );
+}
+
+//@function to-string($list, $glue: '', $is-nested: false) {
+//  $result: null;
+//
+//  @for $i from 1 through length($list) {
+//    $e: nth($list, $i);
+//
+//    @if type-of($e) == list {
+//      $result: $result#{to-string($e, $glue, true)};
+//    } @else {
+//      $result: if(
+//        $i != length($list) or $is-nested,
+//        $result#{$e}#{$glue},
+//        $result#{$e}
+//      );
+//    }
+//  }
+//
+//  @return $result;
+//}
+
+@function map-replace-by-key($map, $input)
+{
+	@if(type-of($input) == "color")
+	{
+		$input: ($input,);
+	}
+
+	@if(type-of($input) == "string")
+	{
+		$input: str-split($input, " ");
+	}
+
+	@if(type-of($input) == "list")
+	{
+		@for $item from 1 through length($input)
+		{
+			$key: nth($input, $item);
+
+			@if(type-of($key) == "string")
+			{
+				$key: unquote($key);
+			}
+
+			@if(map-has-key($map, $key))
+			{
+				$input: set-nth($input, $item, v($map, $key));
+			}
+			@else
+			{
+				$input: set-nth($input, $item, $key);
+			}
+		}
+	}
+
+	@return $input;
+}
+
+@function map-replace-by-key-default($map, $items)
+{
+	@if(length($items) == 0)
+	{
+		@return v($map);
+	}
+	@else if(length($items) == 1)
+	{
+		$item: nth($items, 1);
+
+		@if(length($item) > 1)
+		{
+			@return map-replace-by-key($map, $items);
+		}
+		@else
+		{
+			@return v($map, $item);
+		}
+	}
+	@else
+	{
+		@return v($map, $items...);
+	}
+}
+
+@function padding($items...)
+{
+	@return map-replace-by-key-default($padding, $items);
+}
+
+@function margin($items...) {
+	@return map-replace-by-key-default($margin, $items);
+}
+
+@function height($items...) {
+	@return map-replace-by-key-default($height, $items);
+}
+
+@function width($items...) {
+	@return map-replace-by-key-default($width, $items);
+}
+
+@function color($items...) {
+	@return map-replace-by-key-default($color, $items);
+}
+
+@function font($items...) {
+	@return map-replace-by-key-default($font, $items);
+}
+
+@function border($item...) {
+	@return map-replace-by-key-default($border, $item);
+}
