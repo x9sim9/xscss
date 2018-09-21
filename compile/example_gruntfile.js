@@ -1,3 +1,26 @@
+var pattern = {
+	preprocess: [
+		{
+			pattern: /\~([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^\r\n]*)\)[ ]*([\r]*\n)/ig,
+			replacement: '@include $1($2); $3'
+		},
+		{
+		pattern: /\~([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^\}\{]*)\)[\s]+\}/ig,
+			replacement: '@include $1($2); }'
+		},
+		{
+			pattern: /\~([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^;\{]*)\)\;/ig,
+			replacement: '@include $1($2);'
+		},
+	],
+	postprocss: [
+		{
+			pattern: /@include ([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^;\{]*)\)\;/ig,
+			replacement: '~$1($2);'
+		}
+	],
+};
+
 module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -38,19 +61,7 @@ module.exports = function(grunt) {
 					'./': '.FOLDER/*.scss'
 				},
 				options: {
-					replacements: [						
-						{
-							pattern: /\~([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^\r\n]*)\)[ ]*([\r]*\n)/ig,
-							replacement: '@include $1($2); $3' 
-						},						
-						{
-						pattern: /\~([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^\}]*)\)[\s]+\}/ig,
-							replacement: '@include $1($2); }'
-						},
-						{
-							pattern: /\~([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^;]*)\)\;/ig,
-							replacement: '@include $1($2);'
-						},	
+					replacements: pattern.preprocess,	
 					]
 				}
 			},
@@ -59,12 +70,7 @@ module.exports = function(grunt) {
 					'./': '../../web/sites/all/themes/ifafri/css/*.scss'
 				},
 				options: {
-					replacements: [
-					{
-						pattern: /@include ([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^;]*)\)\;/ig,
-						replacement: '~$1($2);'
-					}
-					]
+					replacements: pattern.postprocess,
 				}
 			}
 		},
