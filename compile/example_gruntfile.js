@@ -13,7 +13,7 @@ var pattern = {
 			replacement: '@include $1($2);'
 		},
 	],
-	postprocss: [
+	postprocess: [
 		{
 			pattern: /@include ([\$a-z0-9A-Z\._ \-\(\),\"\']+)\(([^;\{]*)\)\;/ig,
 			replacement: '~$1($2);'
