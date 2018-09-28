@@ -160,7 +160,14 @@
 		}
 		@else
 		{
-			@return v($map, $item);
+			$output: v($map, $item);
+
+			@if($output == null)
+			{
+				$output: $item;
+			}
+
+			@return $output;
 		}
 	}
 	@else
@@ -196,4 +203,16 @@
 
 @function border($item...) {
 	@return map-replace-by-key-default($border, $item);
+}
+
+@function is-int($type)
+{
+	@if round($type) == $type
+	{
+		@return true;
+	}
+	@else
+	{
+		@return false;
+	}
 }

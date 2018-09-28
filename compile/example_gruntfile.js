@@ -61,8 +61,7 @@ module.exports = function(grunt) {
 					'./': '.FOLDER/*.scss'
 				},
 				options: {
-					replacements: pattern.preprocess,	
-					]
+					replacements: pattern.preprocess
 				}
 			},
 			'postprocess_theme': {
@@ -70,7 +69,7 @@ module.exports = function(grunt) {
 					'./': '../../web/sites/all/themes/ifafri/css/*.scss'
 				},
 				options: {
-					replacements: pattern.postprocess,
+					replacements: pattern.postprocess
 				}
 			}
 		},

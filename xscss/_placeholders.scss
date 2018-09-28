@@ -1,7 +1,149 @@
-%remove_layout {
-	@include remove_layout();
-}
+/* ------ T O O L S ------ */
+/* ======================= */
 
-%remove_styling {
-	@include remove_styling();
-}
+/**
+ * Remove Layout
+ *
+ * A simple way to remove all existing layout from an element
+ *
+ * Created as a Mixin and Placeholder so it can be used inside responsive code
+ *
+ */
+	%remove_layout {
+		@include remove_layout();
+	}
+
+
+/**
+ * Remove Styling
+ *
+ * A simple way to remove all existing layout, and common styling from an element
+ *
+ * Created as a Mixin and Placeholder so it can be used inside responsive code
+ *
+ */
+	%remove_styling {
+		@include remove_styling();
+	}
+
+
+
+/* ------ R E S P O N S I V E ------ */
+/* ================================= */
+
+/**
+ * Desktop Responsive Layout
+ *
+ * Similar to bootstrap columns without the need for a .row class to remove padding from first and last elements
+ *
+ * Examples:
+ *          .col-4      element width 4/12, use with %row to remove the padding from first and last element
+ *
+ *          .col-4-1    applies 4/12 to first element & removes padding from left
+ *          .col-4-2    applies 4/12 to second element
+ *          .col-4-3    applies 4/12 to last element & removes padding from right
+ *
+ *          .col-8-4-1  applies 8/12 to first element & removes padding from left
+ *          .col-8-4-2  applies 4/12 to last element & removes padding from right
+ */
+	@include responsive(desktop) {
+		%row { clear:both; margin:0 (margin() * -1); }
+		%col { float:left; @include padding(0 default); }
+
+		@for $i from 1 to 12
+		{
+			%col-#{$i} { @extend %col; width:(100% / 12) * $i; }
+
+			@if(is-int(12/$i))
+			{
+				@for $j from 1 to (12/$i)+1
+				{
+					@if($j == 1)
+					{
+						%col-#{$i}-#{$j} { @include padding(0, left); clear:left; }
+					}
+
+					%col-#{$i}-#{$j} { @extend %col; width:(100% / 12) * $i; }
+
+					@if($j == $i)
+					{
+						%col-#{$i}-#{$j} { @include padding(0, right); }
+					}
+				}
+			}
+
+			%col-#{$i}-#{12 - $i}-1 { @extend %col; width:(100% / 12) * $i; @include padding(0, left); clear:left; }
+			%col-#{$i}-#{12 - $i}-2 { @extend %col; float:right; width:(100% / 12) * (12 - $i); @include padding(0, right); }
+		}
+	}
+
+
+/**
+ * Mobile Responsive Layout
+ *
+ * Similar to bootstrap columns without the need for a .row class to remove padding from first and last elements
+ *
+ * Examples:
+ *          .mcol-4      element width 4/12, use with %row to remove the padding from first and last element
+ *
+ *          .mcol-4-1    applies 4/12 to first element & removes padding from left
+ *          .mcol-4-2    applies 4/12 to second element
+ *          .mcol-4-3    applies 4/12 to last element & removes padding from right
+ *
+ *          .mcol-8-4-1  applies 8/12 to first element & removes padding from left
+ *          .mcol-8-4-2  applies 4/12 to last element & removes padding from right
+ */
+	@include responsive(mobile) {
+		%mrow { clear:both; margin:0 (margin() * -1); }
+		%mcol { float:left; @include padding(0 default); }
+
+		@for $i from 1 to 12
+		{
+			%mcol-#{$i} { @extend %mcol; width:(100% / 12) * $i; }
+
+			@if(is-int(12/$i))
+			{
+				@for $j from 1 to (12/$i)+1
+				{
+					@if($j == 1)
+					{
+						%mcol-#{$i}-#{$j} { @include padding(0, left); clear:left; }
+					}
+
+					%mcol-#{$i}-#{$j} { @extend %mcol; width:(100% / 12) * $i; }
+
+					@if($j == $i)
+					{
+						%mcol-#{$i}-#{$j} { @include padding(0, right); }
+					}
+				}
+			}
+
+			%mcol-#{$i}-#{12 - $i}-1 { @extend %mcol; width:(100% / 12) * $i; @include padding(0, left); clear:left; }
+			%mcol-#{$i}-#{12 - $i}-2 { @extend %mcol; float:right; width:(100% / 12) * (12 - $i); @include padding(0, right); }
+		}
+	}
+
+/**
+ * Clear
+ *
+ * Similar to clearfix in bootstrap without the need for a seperate class, adds pseudo class to end of the of the floated content
+ */
+	%clear-both {
+		&:after {	content:''; clear:both; display:block; }
+	}
+
+	%clear-right {
+		&:after {	content:''; clear:right; display:block; }
+	}
+
+	%clear-left {
+		&:before { content:''; clear:left; display:block; }
+	}
+
+
+
+
+
+
+

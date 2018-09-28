@@ -1,260 +1,370 @@
-@mixin border($type:null, $border_color:null, $size:v($border), $extra:null)
-{
-	$border_color: map-replace-by-key($color, $border_color);
-
-  @if($type == top)
-  {
-    border-top:solid $size $border_color $extra;
-  }
-  @else if($type == left)
-  {
-    border-left:solid $size $border_color $extra;
-  }
-  @else if($type == right)
-  {
-    border-right:solid $size $border_color $extra;
-  }
-  @else if($type == bottom)
-  {
-    border-bottom:solid $size $border_color $extra;
-  }
-  @else
-  {
-    border:solid $size $border_color $extra;
-  }
-}
-
-@mixin color($item, $extra:null)
-{
-	$item: map-replace-by-key($color, $item);
-	color:$item $extra;
-}
-
-@mixin background-color($item, $extra:null)
-{
-	$item: map-replace-by-key($color, $item);
-	background-color:$item $extra;
-}
-
-@mixin bg-color($item, $extra:null)
-{
-	@include background-color($item, $extra);
-}
-
-@mixin padding($size:default, $type:null, $extra:null)
-{
-	$size: map-replace-by-key($padding, $size);
-
-  @if($type == top)
-  {
-    padding-top:$size $extra;
-  }
-  @else if($type == left)
-  {
-    padding-left:$size $extra;
-  }
-  @else if($type == right)
-  {
-    padding-right:$size $extra;
-  }
-  @else if($type == bottom)
-  {
-    padding-bottom:$size $extra;
-  }
-  @else
-  {
-    padding:$size $extra;
-  }
-}
-
-@mixin margin($size:default, $type:null, $extra:null)
-{
-	$size: map-replace-by-key($margin, $size);
-
-  @if($type == top)
-  {
-    margin-top:$size $extra;
-  }
-  @else if($type == left)
-  {
-    margin-left:$size $extra;
-  }
-  @else if($type == right)
-  {
-    margin-right:$size $extra;
-  }
-  @else if($type == bottom)
-  {
-    margin-bottom:$size $extra;
-  }
-  @else
-  {
-    margin:$size $extra;
-  }
-}
 
 
-/* @include clearfix */
-@mixin clearfix
-{
-	&:before,
-	&:after { content:""; display:table; }
-	&:after { clear: both; }
-	zoom: 1;
-}
+/* ------ T O O L S ------ */
+/* ======================= */
 
-/* @include transition(all,2s,ease-out); */
-@mixin transition($what: all, $time: 0.2s, $how: ease-in-out)
-{
-		-webkit-transition: $what $time $how;
-		-moz-transition:		$what $time $how;
-		-ms-transition:		 $what $time $how;
-		-o-transition:			$what $time $how;
-		transition:				 $what $time $how;
-}
-
-/* @include responsive("lg", "MIN") { display:none; } */
-/* @include responsive("desktop") { display:none; } */
-@mixin responsive($breakpoint, $type:"max")
-{
-	// If the key exists $screen-width
-	@if map-has-key($screen_width, $breakpoint)
+/**
+ * Remove Layout
+ *
+ * A simple way to remove all existing layout from an element
+ *
+ * Created as a Mixin and Placeholder so it can be used inside responsive code
+ *
+ */
+	@mixin remove_layout()
 	{
-		@if($type == min)
-		{
-			@media (min-width: v($screen_width, $breakpoint)) {
-				@content;
-			}
-		}
-		@else	// MAX
-		{
-			@media (max-width: v($screen_width, $breakpoint)) {
-				@content;
-			}
-		}
-
+		border:0;
+		padding:0;
+		margin:0;
+		border-radius:0;
 	}
-	@else if map-has-key($device_width, $breakpoint)
+
+
+/**
+ * Remove Styling
+ *
+ * A simple way to remove all existing layout, and common styling from an element
+ *
+ * Created as a Mixin and Placeholder so it can be used inside responsive code
+ *
+ */
+	@mixin remove_styling()
 	{
-		@if($breakpoint == desktop)
+		@include remove_layout();
+
+		color:inherit;
+		background-color:inherit;
+		box-shadow:none;
+	}
+
+
+
+/* ------ L A Y O U T ------ */
+/* ========================= */
+
+	/**
+	 * Padding
+	 *
+	 * Enhances additional padding command with the ability to create a predefined set of padding rules
+	 *
+	 * Padding rules are defined in the set $padding: (  )  inside _settings.scss
+	 *
+	 * Examples:
+	 *          @include padding(default double 0 0);
+	 *          @include padding(large, bottom, !important);
+	 *          @include padding(default auto);
+	 *          @include padding(10px double 5px 0);
+	 *
+	 */
+	@mixin padding($size:default, $type:null, $extra:null)
+	{
+		$size: map-replace-by-key($padding, $size);
+
+		@if($type == top)
 		{
-			@media (min-width: v($device_width, $breakpoint)) {
-				@content;
-			}
+			padding-top:$size $extra;
+		}
+		@else if($type == left)
+		{
+			padding-left:$size $extra;
+		}
+		@else if($type == right)
+		{
+			padding-right:$size $extra;
+		}
+		@else if($type == bottom)
+		{
+			padding-bottom:$size $extra;
 		}
 		@else
 		{
-			@media (max-width: v($device_width, $breakpoint)) {
-				@content;
-			}
+			padding:$size $extra;
 		}
 	}
 
 
-	// If the key doesn't exist in the map
-	@else {
-		@warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
-				+ "Available breakpoints are $screen-width: #{map-keys($screen_width)}."
-				+ "Available breakpoints are $device-width: #{map-keys($device_width)}.";
+	/**
+	 * Margin
+	 *
+	 * Enhances additional margin command with the ability to create a predefined set of margin rules
+	 *
+	 * Margin rules are defined in the set $margin: (  )  inside _settings.scss
+	 *
+	 * Examples:
+	 *          @include margin(default double 0 0);
+	 *          @include margin(large, bottom, !important);
+	 *          @include margin(default auto);
+	 *          @include margin(10px double 5px 0);
+	 *
+	 */
+	@mixin margin($size:default, $type:null, $extra:null)
+	{
+		$size: map-replace-by-key($margin, $size);
 
+		@if($type == top)
+		{
+			margin-top:$size $extra;
+		}
+		@else if($type == left)
+		{
+			margin-left:$size $extra;
+		}
+		@else if($type == right)
+		{
+			margin-right:$size $extra;
+		}
+		@else if($type == bottom)
+		{
+			margin-bottom:$size $extra;
+		}
+		@else
+		{
+			margin:$size $extra;
+		}
 	}
-}
 
-/* @include column(1) */
-@mixin column($columns)
-{
-	width:calc(100% / #{$columns});
-}
 
-@mixin fake-underline($color: #666, $top: 84%, $bottom: 90%) {
-		background-image: linear-gradient(
-				180deg, rgba(0,0,0,0),
-				rgba(0,0,0,0) $top,
-				$color $top + 0.1%,
-				$color $bottom,
-				rgba(0,0,0,0) $bottom + 0.1%,
-				rgba(0,0,0,0)
+	/**
+	 * Border
+	 *
+	 * Enhances additional border command with the ability to create a predefined set of margin rules
+	 *
+	 * @param string $type - The placement of the border
+	 *                     - Options are top, left, right, bottom, default
+	 *                     - Note leaving the value blank will automatically use the value default
+	 * @param string $border_color - The color of the border
+	 *                             - Allows you to use colors predefined in the set $color: ( )  inside _settings.scss - e.g. dark_red, light_orange, etc...
+	 *                             - You can use standard colors (if not overriden in $color) - e.g. red, green, blue
+	 *                             - You can use standard hex colors - e.g. #FFFFFF or #FFF
+	 *                             - You can use rgb colors - e.g. rgba(255, 255, 255, 0.5) or rgba(#CCC, 0.3)
+	 * @param string $size - Defines the size of the border
+	 *                     - Allows you to use border sizes predefined in the $border: ()  inside _settings.scss - e.g. default, medium, large
+	 *                     - All standard border sizes can be used
+	 * @param string $extra - Used to add additonal commends to the end of the generated tag
+	 *                      - e.g. !important
+	 *
+	 * Examples:
+	 *          @include border();
+	 *          @include border(top, red);
+	 *          @include border(default, yellow, 12px);
+	 *          @include border(large, light_orange, default, !important);
+	 *
+	 */
+	@mixin border($type:null, $border_color:null, $size:v($border), $extra:null)
+	{
+		$border_color: color($border_color);
+
+		@if($type == top)
+		{
+			border-top:solid $size $border_color $extra;
+		}
+		@else if($type == left)
+		{
+			border-left:solid $size $border_color $extra;
+		}
+		@else if($type == right)
+		{
+			border-right:solid $size $border_color $extra;
+		}
+		@else if($type == bottom)
+		{
+			border-bottom:solid $size $border_color $extra;
+		}
+		@else
+		{
+			border:solid $size $border_color $extra;
+		}
+	}
+
+	@mixin vertical_align($height, $align:'')
+	{
+		$aligns: (
+			top: flex-start,
+			middle: center,
+			bottom: flex-end,
+			equal: space-between
 		);
-		text-decoration: none;
-}
 
-@mixin vertical_align($height, $align:'')
-{
-	$aligns: (
-		top: flex-start,
-		middle: center,
-		bottom: flex-end,
-		equal: space-between
-	);
-
-	display:flex;
-	flex-direction:column;
-	justify-content:v($aligns, $align);
-	height:$height;
-}
-
-@mixin valign($height, $align:'')
-{
-	@include vertical_align($height, $align);
-}
-
-@mixin remove_layout()
-{
-	border:0;
-	padding:0;
-	margin:0;
-	border-radius:0;
-}
-
-@mixin remove_styling()
-{
-	@include remove_layout();
-
-	color:inherit;
-	background-color:inherit;
-	box-shadow:none;
-}
-
-@mixin background_image($item...)
-{
-	$url: null;
-
-	@if(length($item) > 1)
-	{
-		$url: v($image, $item...);
-	}
-	@else
-	{
-		$url: nth($item, 1);
+		display:flex;
+		flex-direction:column;
+		justify-content:v($aligns, $align);
+		height:$height;
 	}
 
-	$url: v($path, images) + $url;
-
-	background-image:url($url);
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: cover;
-}
-
-@mixin bg-image($item...)
-{
-	@include background_image($item...);
-}
-
-@mixin image($item...)
-{
-	$url: null;
-
-	@if(length($item) > 1)
+	@mixin valign($height, $align:'')
 	{
-		$url: v($image, $item...);
-	}
-	@else
-	{
-		$url: nth($item, 1);
+		@include vertical_align($height, $align);
 	}
 
-	$url: v($path, images) + $url;
+	@mixin width($item...)
+	{
+		width:width($item...);
+	}
 
-	content:url($url);
-}
+	@mixin height($item...)
+	{
+		height:height($item...);
+	}
+
+
+
+/* ------ C O L O U R S ------ */
+/* =========================== */
+	@mixin color($item, $extra:null)
+	{
+		$item: map-replace-by-key($color, $item);
+		color:$item $extra;
+	}
+
+	@mixin background-color($item, $extra:null)
+	{
+		$item: map-replace-by-key($color, $item);
+		background-color:$item $extra;
+	}
+
+	@mixin bg-color($item, $extra:null)
+	{
+		@include background-color($item, $extra);
+	}
+
+
+
+/* ------ R E S P O N S I V E ------ */
+/* ================================= */
+
+	/* @include clearfix */
+	@mixin clearfix
+	{
+		&:before,
+		&:after { content:""; display:table; }
+		&:after { clear: both; }
+		zoom: 1;
+	}
+
+	/* @include responsive("lg", "MIN") { display:none; } */
+	/* @include responsive("desktop") { display:none; } */
+	@mixin responsive($breakpoint, $type:"max")
+	{
+		// If the key exists $screen-width
+		@if map-has-key($screen_width, $breakpoint)
+		{
+			@if($type == min)
+			{
+				@media (min-width: v($screen_width, $breakpoint)) {
+					@content;
+				}
+			}
+			@else	// MAX
+			{
+				@media (max-width: v($screen_width, $breakpoint)) {
+					@content;
+				}
+			}
+
+		}
+		@else if map-has-key($device_width, $breakpoint)
+		{
+			@if($breakpoint == desktop)
+			{
+				@media (min-width: v($device_width, $breakpoint)) {
+					@content;
+				}
+			}
+			@else
+			{
+				@media (max-width: v($device_width, $breakpoint)) {
+					@content;
+				}
+			}
+		}
+
+
+		// If the key doesn't exist in the map
+		@else {
+			@warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+					+ "Available breakpoints are $screen-width: #{map-keys($screen_width)}."
+					+ "Available breakpoints are $device-width: #{map-keys($device_width)}.";
+
+		}
+	}
+
+
+
+/* ------ A N I M A T I O N ------ */
+/* =============================== */
+
+	/* @include transition(all,2s,ease-out); */
+	@mixin transition($what: all, $time: 0.2s, $how: ease-in-out)
+	{
+			-webkit-transition: $what $time $how;
+			-moz-transition:		$what $time $how;
+			-ms-transition:		 $what $time $how;
+			-o-transition:			$what $time $how;
+			transition:				 $what $time $how;
+	}
+
+
+
+/* ------ M I S C E L L A N E O U S ------ */
+/* ======================================= */
+	@mixin fake-underline($color: #666, $top: 84%, $bottom: 90%) {
+			background-image: linear-gradient(
+					180deg, rgba(0,0,0,0),
+					rgba(0,0,0,0) $top,
+					$color $top + 0.1%,
+					$color $bottom,
+					rgba(0,0,0,0) $bottom + 0.1%,
+					rgba(0,0,0,0)
+			);
+			text-decoration: none;
+	}
+
+
+
+/* ------ I M A G E S ------ */
+/* ========================= */
+
+	@mixin background_image($item...)
+	{
+		$url: null;
+
+		@if(length($item) > 1)
+		{
+			$url: v($image, $item...);
+		}
+		@else
+		{
+			$url: nth($item, 1);
+		}
+
+		$url: v($path, images) + $url;
+
+		background-image:url($url);
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
+
+	@mixin bg-image($item...)
+	{
+		@include background_image($item...);
+	}
+
+	@mixin image($item...)
+	{
+		$url: null;
+
+		@if(length($item) > 1)
+		{
+			$url: v($image, $item...);
+		}
+		@else
+		{
+			$url: nth($item, 1);
+		}
+
+		$url: v($path, images) + $url;
+
+		content:url($url);
+	}
+
